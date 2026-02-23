@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owner Dashboard — The Selection</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0d1b2a;--navy-mid:#152336;--navy-light:#1e3450;
+  --gold:#c9a84c;--gold-light:#e2c47a;
+  --sidebar-bg:#0a1520;--sidebar-w:240px;
+  --border:#e8edf3;--text:#1a2332;--text-mid:#4a5568;--text-light:#94a3b8;
+  --white:#ffffff;--cream:#faf6ee;
+  --green:#22c55e;--red:#ef4444;--amber:#f59e0b;--blue:#3b82f6;--purple:#8b5cf6;
+  --radius:12px;--shadow:0 1px 12px rgba(13,27,42,0.08);--shadow-md:0 4px 24px rgba(13,27,42,0.12);
+}
+/* Sidebar narrower on small screens */
+@media(max-width:360px){:root{--sidebar-w:220px;}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:#f0f4f8;color:var(--text);overflow-x:hidden;}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;}
+.login-box{background:#fff;border-radius:20px;padding:48px 44px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.3);text-align:center;}
+.login-logo{font-family:'Cinzel',serif;font-size:22px;color:var(--navy);letter-spacing:3px;margin-bottom:4px;}
+.login-subtitle{font-size:11px;color:var(--text-light);letter-spacing:1px;margin-bottom:28px;}
+.login-title{font-size:24px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.login-desc{font-size:13px;color:var(--text-mid);margin-bottom:26px;line-height:1.55;}
+.l-group{text-align:left;margin-bottom:14px;}
+.l-group label{display:block;font-size:11px;font-weight:600;color:var(--text-mid);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;}
+.l-group input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s;background:#f8fafc;}
+.l-group input:focus{border-color:var(--gold);background:#fff;}
+.login-btn{width:100%;padding:13px;background:var(--navy);color:var(--gold);border:none;border-radius:50px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:6px;}
+.login-btn:hover{background:var(--gold);color:var(--navy);}
+.login-err{font-size:12px;color:var(--red);margin-top:10px;display:none;}
+.login-hint{font-size:11px;color:var(--text-light);margin-top:18px;border-top:1px solid var(--border);padding-top:14px;}
+
+/* LAYOUT */
+#dashboard{display:none;min-height:100vh;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:var(--sidebar-bg);display:flex;flex-direction:column;overflow-y:auto;}
+.sb-brand{padding:26px 20px 18px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.sb-logo{font-family:'Cinzel',serif;font-size:15px;color:var(--gold);letter-spacing:2px;}
+.sb-sub{font-size:10px;color:rgba(255,255,255,.35);letter-spacing:1px;margin-top:3px;}
+.sb-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.25);border-radius:50px;padding:3px 10px;margin-top:10px;font-size:10px;color:var(--gold);letter-spacing:.5px;}
+.sb-nav{padding:14px 10px;flex:1;}
+.sb-section{font-size:9px;color:rgba(255,255,255,.22);letter-spacing:2px;text-transform:uppercase;padding:14px 8px 5px;font-weight:600;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;color:rgba(255,255,255,.55);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;margin-bottom:2px;text-decoration:none;border:none;background:none;width:100%;font-family:'Inter',sans-serif;text-align:left;}
+.sb-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9);}
+.sb-item.active{background:rgba(201,168,76,.12);color:var(--gold);}
+.sb-item .si{font-size:16px;flex-shrink:0;}
+.sb-badge2{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:50px;}
+.sb-footer{padding:14px 18px;border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:rgba(255,255,255,.3);}
+.btn-logout{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.4);cursor:pointer;font-size:12px;padding:8px 0;border:none;background:none;font-family:'Inter',sans-serif;transition:color .2s;}
+.btn-logout:hover{color:var(--red);}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column;}
+.topbar{background:#fff;padding:15px 26px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:50;}
+.tb-title{font-size:19px;font-weight:700;color:var(--navy);}
+.tb-sub{font-size:12px;color:var(--text-light);margin-top:2px;}
+.tb-actions{display:flex;align-items:center;gap:10px;}
+.tb-btn{display:flex;align-items:center;gap:6px;padding:8px 15px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border:none;font-family:'Inter',sans-serif;}
+.tb-btn.pri{background:var(--navy);color:var(--gold);}
+.tb-btn.pri:hover{background:var(--navy-light);}
+.tb-btn.sec{background:var(--border);color:var(--text);}
+.tb-btn.sec:hover{background:#d0d8e4;}
+.tb-avatar{width:34px;height:34px;border-radius:50%;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;font-family:'Cinzel',serif;}
+
+/* PANELS */
+.panel{display:none;padding:26px;}
+.panel.active{display:block;}
+
+/* STATS */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px;}
+.stat-card{background:#fff;border-radius:var(--radius);padding:20px 20px;box-shadow:var(--shadow);border-left:4px solid transparent;position:relative;overflow:hidden;}
+.stat-card::after{content:attr(data-icon);position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:38px;opacity:.07;}
+.stat-label{font-size:10px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.stat-value{font-size:26px;font-weight:700;color:var(--navy);line-height:1;margin-bottom:5px;}
+.stat-change{font-size:11px;}
+.stat-change.up{color:var(--green);}
+.stat-change.dn{color:var(--red);}
+.stat-card.g{border-color:var(--green);}
+.stat-card.a{border-color:var(--amber);}
+.stat-card.b{border-color:var(--blue);}
+.stat-card.p{border-color:var(--purple);}
+
+/* CARD */
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:0;}
+.ch{padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.ct{font-size:14px;font-weight:700;color:var(--navy);}
+.cs{font-size:11px;color:var(--text-light);margin-top:1px;}
+.cb{padding:18px 20px;}
+.cf{padding:12px 20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-light);}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;}
+.g12{display:grid;grid-template-columns:1fr 2fr;gap:18px;}
+
+/* TABLE */
+.dt{width:100%;border-collapse:collapse;}
+/* Make card body containing tables scrollable on mobile */
+.cb:has(.dt){overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0;}
+.dt{min-width:480px;}
+.dt th{text-align:left;padding:9px 14px;font-size:10px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;background:#f8fafc;border-bottom:1px solid var(--border);}
+.dt td{padding:12px 14px;font-size:13px;border-bottom:1px solid #f0f4f8;vertical-align:middle;}
+.dt tr:last-child td{border:none;}
+.dt tr:hover td{background:#fafbfc;}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:50px;font-size:10px;font-weight:700;}
+.bg{background:#dcfce7;color:#15803d;}
+.br{background:#fee2e2;color:#b91c1c;}
+.ba{background:#fef3c7;color:#92400e;}
+.bb{background:#dbeafe;color:#1d4ed8;}
+.bp{background:#ede9fe;color:#6d28d9;}
+.bw{background:#f1f5f9;color:#475569;}
+
+/* STOCK BAR */
+.sr{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.sl{font-size:12px;color:var(--text);min-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sbw{flex:1;height:7px;background:#f0f4f8;border-radius:4px;overflow:hidden;}
+.sbf{height:100%;border-radius:4px;transition:width .5s ease;}
+.sbf.ok{background:var(--green);}
+.sbf.warn{background:var(--amber);}
+.sbf.low{background:var(--red);}
+.sql{font-size:11px;color:var(--text-light);min-width:52px;text-align:right;}
+
+/* ALERTS */
+.al-item{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:9px;border:1px solid;margin-bottom:10px;}
+.al-item.r{background:#fff5f5;border-color:#fecaca;}
+.al-item.a{background:#fffbeb;border-color:#fde68a;}
+.al-item.b{background:#eff6ff;border-color:#bfdbfe;}
+.al-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.al-dot.r{background:var(--red);}
+.al-dot.a{background:var(--amber);}
+.al-dot.b{background:var(--blue);}
+.al-msg{font-size:13px;color:var(--text);line-height:1.5;}
+.al-time{font-size:10px;color:var(--text-light);margin-top:2px;}
+
+/* MINI STAT */
+.ms{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.ms:last-child{border:none;}
+.ms-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.ms-lbl{font-size:11px;color:var(--text-mid);}
+.ms-val{font-size:15px;font-weight:700;color:var(--navy);}
+.ms-right{margin-left:auto;}
+
+/* FORM */
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:10px;font-weight:700;color:var(--text-mid);letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);outline:none;background:#f8fafc;transition:border-color .2s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--gold);background:#fff;}
+.fg textarea{resize:vertical;min-height:75px;}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.fa{display:flex;gap:9px;margin-top:4px;}
+.btn-pf{padding:9px 20px;background:var(--navy);color:var(--gold);border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-pf:hover{background:var(--navy-light);}
+.btn-gh{padding:9px 20px;background:transparent;color:var(--text-mid);border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-gh:hover{background:#f0f4f8;}
+
+/* CHART */
+.chart-box{height:170px;background:linear-gradient(135deg,#f0f4f8,#e8edf3);border-radius:10px;display:flex;align-items:flex-end;gap:8px;padding:14px 12px 0;}
+.cb-bar{flex:1;border-radius:5px 5px 0 0;transition:height .5s ease;cursor:pointer;}
+.cb-bar:hover{opacity:.8;}
+
+/* GENDER TOGGLE */
+.gt-bar{display:flex;border-radius:9px;overflow:hidden;border:1.5px solid var(--border);background:#fff;width:fit-content;margin-bottom:18px;}
+.gt-btn{padding:8px 22px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--text-mid);background:transparent;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.gt-btn.am{background:var(--navy);color:var(--gold);}
+.gt-btn.aw{background:#5c1a6e;color:#f0c0ff);}
+
+/* TAB BAR */
+.tab-bar{display:flex;gap:3px;padding:4px;background:#f0f4f8;border-radius:9px;margin-bottom:18px;width:fit-content;}
+.tab-btn{padding:7px 16px;border-radius:6px;border:none;background:transparent;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--text-mid);cursor:pointer;transition:all .2s;}
+.tab-btn.active{background:#fff;color:var(--navy);box-shadow:var(--shadow);}
+
+/* TOGGLE SWITCH */
+.tgl{position:relative;width:36px;height:19px;}
+.tgl input{opacity:0;width:0;height:0;}
+.tgl-s{position:absolute;cursor:pointer;inset:0;background:#cbd5e1;border-radius:20px;transition:.3s;}
+.tgl-s::before{content:'';position:absolute;width:13px;height:13px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;}
+.tgl input:checked+.tgl-s{background:var(--green);}
+.tgl input:checked+.tgl-s::before{transform:translateX(17px);}
+
+/* OFFER MGR */
+.omr{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.omr:last-child{border:none;}
+.occ{display:inline-block;background:#f0f4f8;border-radius:5px;padding:2px 9px;font-size:11px;font-weight:700;color:var(--navy);font-family:'Cinzel',serif;letter-spacing:1px;}
+
+/* ENQUIRY */
+.eq-card{background:#fff;border-radius:var(--radius);border:1.5px solid var(--border);padding:15px 17px;margin-bottom:10px;transition:border-color .2s;}
+.eq-card:hover{border-color:var(--gold);}
+.eq-hdr{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:9px;}
+.eq-name{font-size:13px;font-weight:600;color:var(--navy);}
+.eq-time{font-size:11px;color:var(--text-light);}
+.eq-body{font-size:13px;color:var(--text-mid);line-height:1.5;margin-bottom:10px;}
+.eq-acts{display:flex;gap:7px;}
+.bsm{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .2s;}
+.bsm.g{background:#dcfce7;color:#15803d;}
+.bsm.g:hover{background:var(--green);color:#fff;}
+.bsm.r{background:#fee2e2;color:#b91c1c;}
+.bsm.b{background:#dbeafe;color:#1d4ed8;}
+.bsm.b:hover{background:var(--blue);color:#fff;}
+
+/* SETTINGS */
+.ss{margin-bottom:28px;}
+.ss-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f8fafc;gap:16px;}
+.srow:last-child{border:none;}
+.slbl{font-size:13px;font-weight:500;color:var(--text);}
+.sdesc{font-size:11px;color:var(--text-light);margin-top:1px;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:#d0d8e4;border-radius:3px;}
+
+/* ════════════════════════════════════
+   MOBILE HAMBURGER BUTTON
+   ════════════════════════════════════ */
+.mob-menu-btn{
+  display:none;flex-direction:column;justify-content:center;gap:4px;
+  background:none;border:none;cursor:pointer;padding:7px;border-radius:8px;
+  transition:background .2s;min-width:40px;min-height:40px;align-items:center;
+}
+.mob-menu-btn:hover{background:#f0f4f8;}
+.mob-menu-btn span{display:block;width:20px;height:2px;background:var(--navy);border-radius:2px;transition:all .25s;}
+
+/* Sidebar overlay (mobile backdrop) */
+.sb-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.55);z-index:99;
+  backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+}
+.sb-overlay.open{display:block;}
+
+/* ════════════════════════════════════
+   MOBILE-FIRST BASE  (no @media = phones)
+   ════════════════════════════════════ */
+
+/* Sidebar: off-canvas, slides in from left */
+.sidebar{
+  transform:translateX(-100%);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  box-shadow:none;
+}
+.sidebar.open{
+  transform:translateX(0);
+  box-shadow:8px 0 32px rgba(0,0,0,.45);
+  z-index:100;
+}
+
+/* Main takes full width */
+.main{margin-left:0;}
+
+/* Topbar compact */
+.topbar{padding:10px 12px;gap:8px;}
+.tb-title{font-size:15px;}
+.tb-sub{display:none;}
+.tb-actions{gap:6px;}
+.tb-btn{padding:7px 10px;font-size:11px;gap:4px;}
+.tb-btn.sec{display:none;}
+.tb-avatar{width:30px;height:30px;font-size:11px;}
+.mob-menu-btn{display:flex;}
+
+/* Panel */
+.panel{padding:12px 10px;}
+
+/* Stats: 2 col on mobile */
+.stat-grid{grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px;}
+.stat-card{padding:13px 11px;}
+.stat-card::after{font-size:26px;right:8px;}
+.stat-label{font-size:9px;}
+.stat-value{font-size:19px;margin-bottom:3px;}
+.stat-change{font-size:10px;}
+
+/* Layout grids: single col */
+.g2,.g3,.g12{grid-template-columns:1fr;gap:12px;}
+.fr{grid-template-columns:1fr;gap:10px;}
+
+/* Cards */
+.ch{padding:11px 12px 9px;flex-wrap:wrap;gap:8px;}
+.ct{font-size:13px;}
+.cs{font-size:10px;}
+.cb{padding:12px;}
+
+/* Tables: scrollable */
+.dt-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.dt{min-width:520px;}
+.dt th{padding:7px 9px;font-size:9px;}
+.dt td{padding:9px 9px;font-size:11.5px;}
+
+/* Stock bars */
+.sl{min-width:110px;font-size:11px;}
+.sql{font-size:10px;min-width:42px;}
+.sbw{min-width:40px;}
+
+/* Tab bar scrollable */
+.tab-bar{overflow-x:auto;flex-wrap:nowrap;width:100%;scrollbar-width:none;}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-btn{flex-shrink:0;padding:6px 12px;font-size:11px;}
+
+/* Gender toggle */
+.gt-bar{width:100%;}
+.gt-btn{flex:1;padding:8px 10px;font-size:11px;justify-content:center;}
+
+/* Mini stats */
+.ms-lbl{font-size:10px;}
+.ms-val{font-size:13px;}
+.ms-icon{width:28px;height:28px;font-size:13px;}
+
+/* Enquiry cards */
+.eq-card{padding:12px 13px;}
+.eq-hdr{flex-direction:column;gap:5px;}
+.eq-name{font-size:13px;}
+.eq-time{font-size:10px;}
+.eq-body{font-size:12px;}
+.eq-acts{flex-wrap:wrap;gap:6px;}
+
+/* Forms */
+.fa{flex-wrap:wrap;}
+.btn-pf,.btn-gh{font-size:12px;padding:8px 14px;}
+
+/* Offer rows */
+.omr{grid-template-columns:1fr auto;gap:8px;}
+.omr>.badge{display:none;}
+
+/* Settings */
+.srow{gap:8px;}
+.slbl{font-size:12px;}
+.sdesc{font-size:10px;}
+
+/* Login screen */
+.login-box{padding:28px 20px;border-radius:16px;margin:16px;}
+.login-logo{font-size:17px;letter-spacing:2px;}
+.login-title{font-size:19px;}
+.login-desc{font-size:12px;margin-bottom:18px;}
+
+/* Chart */
+.chart-box{height:120px;gap:5px;padding:10px 8px 0;}
+
+/* ════════════════════════════════════
+   TABLET 600px+
+   ════════════════════════════════════ */
+@media(min-width:600px){
+  .stat-grid{gap:14px;}
+  .stat-card{padding:15px 14px;}
+  .stat-value{font-size:22px;}
+  .g2{grid-template-columns:1fr 1fr;gap:16px;}
+  .fr{grid-template-columns:1fr 1fr;gap:12px;}
+  .panel{padding:18px 14px;}
+  .tb-sub{display:block;}
+  .eq-hdr{flex-direction:row;align-items:flex-start;}
+  .omr{grid-template-columns:1fr auto auto;}
+  .omr>.badge{display:inline-flex;}
+  .dt th{padding:8px 11px;font-size:9.5px;}
+  .dt td{padding:10px 11px;font-size:12.5px;}
+  .sl{min-width:140px;}
+  .ms-lbl{font-size:11px;}
+  .ms-val{font-size:14px;}
+  .ms-icon{width:32px;height:32px;font-size:14px;}
+  .chart-box{height:150px;}
+}
+
+/* ════════════════════════════════════
+   DESKTOP 900px+  sidebar fixed again
+   ════════════════════════════════════ */
+@media(min-width:900px){
+  .sidebar{transform:translateX(0)!important;box-shadow:none;z-index:100;}
+  .sb-overlay{display:none!important;}
+  .mob-menu-btn{display:none!important;}
+  .main{margin-left:var(--sidebar-w);}
+
+  .topbar{padding:15px 26px;gap:16px;}
+  .tb-title{font-size:19px;}
+  .tb-sub{display:block;}
+  .tb-btn.sec{display:flex;}
+  .tb-actions{gap:10px;}
+  .tb-btn{padding:8px 15px;font-size:12px;gap:6px;}
+  .tb-avatar{width:34px;height:34px;font-size:13px;}
+
+  .panel{padding:26px;}
+
+  .stat-grid{grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px;}
+  .stat-card{padding:20px;}
+  .stat-card::after{font-size:38px;right:14px;}
+  .stat-label{font-size:10px;}
+  .stat-value{font-size:26px;margin-bottom:5px;}
+  .stat-change{font-size:11px;}
+
+  .g2{grid-template-columns:1fr 1fr;gap:18px;}
+  .g3{grid-template-columns:1fr 1fr 1fr;gap:18px;}
+  .g12{grid-template-columns:1fr 2fr;gap:18px;}
+  .fr{grid-template-columns:1fr 1fr;gap:12px;}
+
+  .ch{padding:16px 20px 12px;flex-wrap:nowrap;}
+  .ct{font-size:14px;}
+  .cs{font-size:11px;}
+  .cb{padding:18px 20px;}
+
+  .dt{min-width:0;}
+  .dt th{padding:9px 14px;font-size:10px;}
+  .dt td{padding:12px 14px;font-size:13px;}
+  .sl{min-width:170px;font-size:12px;}
+  .sql{font-size:11px;min-width:52px;}
+
+  .tab-bar{width:fit-content;overflow-x:visible;flex-wrap:nowrap;}
+  .tab-btn{padding:7px 16px;font-size:12px;}
+
+  .gt-bar{width:fit-content;flex-wrap:nowrap;}
+  .gt-btn{flex:none;padding:8px 22px;font-size:12px;}
+
+  .eq-card{padding:15px 17px;}
+  .eq-hdr{flex-direction:row;}
+  .eq-body{font-size:13px;}
+
+  .slbl{font-size:13px;}
+  .sdesc{font-size:11px;}
+
+  .omr{grid-template-columns:1fr auto auto;}
+  .omr>.badge{display:inline-flex;}
+
+  .btn-pf,.btn-gh{font-size:12px;padding:9px 20px;}
+
+  .login-box{padding:48px 44px;border-radius:20px;margin:0;}
+  .login-logo{font-size:22px;letter-spacing:3px;}
+  .login-title{font-size:24px;}
+  .login-desc{font-size:13px;margin-bottom:26px;}
+
+  .ms-lbl{font-size:11px;}
+  .ms-val{font-size:15px;}
+  .ms-icon{width:34px;height:34px;font-size:15px;}
+
+  .chart-box{height:170px;gap:8px;padding:14px 12px 0;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">THE SELECTION</div>
+    <div class="login-subtitle">Proprietor Dashboard · Deoghar, Jharkhand</div>
+    <div class="login-title">🔐 Owner Access Only</div>
+    <div class="login-desc">This panel is restricted to the store owner. Unauthorised access is not permitted.</div>
+    <div class="l-group"><label>Username</label><input type="text" id="lu" placeholder="Enter username" autocomplete="off"></div>
+    <div class="l-group"><label>Password</label><input type="password" id="lp" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="login-btn" onclick="doLogin()">Access Dashboard →</button>
+    <div class="login-err" id="lerr">❌ Incorrect credentials. Please try again.</div>
+    <div class="login-hint">Demo credentials — User: <strong>owner</strong> &nbsp;|&nbsp; Pass: <strong>selection2025</strong></div>
+  </div>
+</div>
+
+<!-- SIDEBAR OVERLAY (mobile backdrop) -->
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo">THE SELECTION</div>
+      <div class="sb-sub">Owner Dashboard</div>
+      <div class="sb-badge">🏪 The Selection</div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">Main</div>
+      <button class="sb-item active" onclick="showPanel('overview')"><span class="si">📊</span>Overview</button>
+      <button class="sb-item" onclick="showPanel('inventory')"><span class="si">📦</span>Inventory<span class="sb-badge2">2</span></button>
+      <button class="sb-item" onclick="showPanel('products')"><span class="si">🛍️</span>Products</button>
+      <button class="sb-item" onclick="showPanel('enquiries')"><span class="si">💬</span>Enquiries<span class="sb-badge2">5</span></button>
+      <div class="sb-section">Business</div>
+      <button class="sb-item" onclick="showPanel('sales')"><span class="si">📈</span>Sales &amp; Revenue</button>
+      <button class="sb-item" onclick="showPanel('offers')"><span class="si">🎁</span>Offers Manager</button>
+      <button class="sb-item" onclick="showPanel('bulk')"><span class="si">🤝</span>Bulk Orders</button>
+      <button class="sb-item" onclick="showPanel('bulk-mkt')"><span class="si">📦</span>Bulk Marketplace</button>
+      <div class="sb-section">Store</div>
+      <button class="sb-item" onclick="showPanel('catalogue')"><span class="si">📋</span>Catalogue Editor</button>
+      <button class="sb-item" onclick="showPanel('settings')"><span class="si">⚙️</span>Settings</button>
+    </nav>
+    <div class="sb-footer">
+      <div style="margin-bottom:9px;">🕐 Login: <span id="login-time-lbl"></span></div>
+      <button class="btn-logout" onclick="doLogout()"><span>🚪</span>Log Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="mob-menu-btn" onclick="openSidebar()" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+        <div>
+          <div class="tb-title" id="panel-title">Overview</div>
+          <div class="tb-sub" id="panel-sub">Business summary · <span id="today-date"></span></div>
+        </div>
+      </div>
+      <div class="tb-actions">
+        <button class="tb-btn sec" onclick="window.open('the-selection.html')">🌐 View Store</button>
+        <button class="tb-btn pri" onclick="showPanel('enquiries')">💬 5 New Enquiries</button>
+        <div class="tb-avatar">TS</div>
+      </div>
+    </div>
+
+    <!-- ══ OVERVIEW ══ -->
+    <div class="panel active" id="panel-overview">
+      <div class="stat-grid">
+        <div class="stat-card g" data-icon="💰"><div class="stat-label">Month Revenue</div><div class="stat-value">₹62,450</div><div class="stat-change up">▲ 18% vs last month</div></div>
+        <div class="stat-card b" data-icon="🛍️"><div class="stat-label">Orders / Enquiries</div><div class="stat-value">84</div><div class="stat-change up">▲ 12 this week</div></div>
+        <div class="stat-card a" data-icon="📦"><div class="stat-label">Low Stock Items</div><div class="stat-value">2</div><div class="stat-change dn">▼ Reorder needed</div></div>
+        <div class="stat-card p" data-icon="👥"><div class="stat-label">Bulk Clients</div><div class="stat-value">11</div><div class="stat-change up">▲ 2 new this month</div></div>
+      </div>
+      <div class="g2" style="margin-bottom:18px;">
+        <div class="card">
+          <div class="ch"><div><div class="ct">Monthly Revenue</div><div class="cs">Last 6 months · ₹ thousands</div></div><span class="badge bg">+18%</span></div>
+          <div class="cb">
+            <div class="chart-box" id="rev-chart"></div>
+            <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--text-light);padding:0 4px;"><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct">Sales by Category</div></div>
+          <div class="cb">
+            <div class="gt-bar">
+              <button class="gt-btn am" id="ov-m" onclick="ovGender('men',this)">👔 Men</button>
+              <button class="gt-btn" id="ov-w" onclick="ovGender('women',this)">👗 Women</button>
+            </div>
+            <div id="ov-men-d">
+              <div class="sr"><span class="sl">Men's Wear / Knitwear</span><div class="sbw"><div class="sbf ok" style="width:72%"></div></div><span class="sql">₹18,200</span></div>
+              <div class="sr"><span class="sl">Round Neck T-Shirts</span><div class="sbw"><div class="sbf ok" style="width:55%"></div></div><span class="sql">₹13,800</span></div>
+              <div class="sr"><span class="sl">Jackets &amp; Coats</span><div class="sbw"><div class="sbf ok" style="width:60%"></div></div><span class="sql">₹15,200</span></div>
+              <div class="sr"><span class="sl">Fabrics</span><div class="sbw"><div class="sbf warn" style="width:38%"></div></div><span class="sql">₹9,500</span></div>
+              <div class="sr"><span class="sl">Footwear</span><div class="sbw"><div class="sbf warn" style="width:22%"></div></div><span class="sql">₹5,750</span></div>
+            </div>
+            <div id="ov-w-d" style="display:none;">
+              <div class="sr"><span class="sl">Suits &amp; Kurtis</span><div class="sbw"><div class="sbf ok" style="width:65%"></div></div><span class="sql">₹14,200</span></div>
+              <div class="sr"><span class="sl">Ethnic Wear</span><div class="sbw"><div class="sbf ok" style="width:48%"></div></div><span class="sql">₹10,500</span></div>
+              <div class="sr"><span class="sl">Festive / Occasion Wear</span><div class="sbw"><div class="sbf warn" style="width:30%"></div></div><span class="sql">₹6,600</span></div>
+              <div class="sr"><span class="sl">Ladies Slippers</span><div class="sbw"><div class="sbf warn" style="width:20%"></div></div><span class="sql">₹4,400</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="g12">
+        <div class="card">
+          <div class="ch"><div><div class="ct">⚠️ Alerts</div><div class="cs">Action required</div></div></div>
+          <div class="cb" style="padding:14px 16px;">
+            <div class="al-item r"><div class="al-dot r"></div><div><div class="al-msg"><strong>Cotton Trouser Fabric</strong> — Only 55m left. Critical reorder.</div><div class="al-time">Stock · Critical</div></div></div>
+            <div class="al-item r"><div class="al-dot r"></div><div><div class="al-msg"><strong>Knit Shirt Fabric</strong> — 110m remaining. Below threshold.</div><div class="al-time">Stock · Low</div></div></div>
+            <div class="al-item a"><div class="al-dot a"></div><div><div class="al-msg"><strong>5 new enquiries</strong> pending reply.</div><div class="al-time">Customer · Today</div></div></div>
+            <div class="al-item b"><div class="al-dot b"></div><div><div class="al-msg"><strong>EID20</strong> offer expires in 3 days. Extend?</div><div class="al-time">Offers · Action</div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct">Quick Stats</div></div>
+          <div class="cb">
+            <div class="ms"><div class="ms-icon" style="background:#dcfce7;">💰</div><div><div class="ms-lbl">Today's Revenue</div><div class="ms-val">₹3,840</div></div><div class="ms-right"><span class="badge bg">▲ 22%</span></div></div>
+            <div class="ms"><div class="ms-icon" style="background:#dbeafe;">🛍️</div><div><div class="ms-lbl">Today's Orders</div><div class="ms-val">7</div></div><div class="ms-right"><span class="badge bb">Today</span></div></div>
+            <div class="ms"><div class="ms-icon" style="background:#fef3c7;">📦</div><div><div class="ms-lbl">Pending Bulk Quotes</div><div class="ms-val">3</div></div><div class="ms-right"><span class="badge ba">Action</span></div></div>
+            <div class="ms"><div class="ms-icon" style="background:#ede9fe;">👥</div><div><div class="ms-lbl">Website Visitors Today</div><div class="ms-val">46</div></div><div class="ms-right"><span class="badge bp">Live</span></div></div>
+            <div class="ms"><div class="ms-icon" style="background:#fee2e2;">📱</div><div><div class="ms-lbl">WhatsApp Clicks Today</div><div class="ms-val">12</div></div><div class="ms-right"><span class="badge bg">Active</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ INVENTORY ══ -->
+    <div class="panel" id="panel-inventory">
+      <div class="gt-bar">
+        <button class="gt-btn am" id="inv-mb" onclick="invTab('men',this)">👔 Men</button>
+        <button class="gt-btn" id="inv-wb" onclick="invTab('women',this)">👗 Women</button>
+        <button class="gt-btn" id="inv-fb" onclick="invTab('fabrics',this)">🧵 Fabrics</button>
+      </div>
+      <!-- Men -->
+      <div id="inv-men">
+        <div class="g2">
+          <div class="card">
+            <div class="ch"><div class="ct">👔 Men's Clothing</div></div>
+            <div class="cb">
+              <div class="sr"><span class="sl">Men Knitted Wear</span><div class="sbw"><div class="sbf ok" style="width:80%"></div></div><span class="sql">160 pcs</span></div>
+              <div class="sr"><span class="sl">Polyester T-Shirt</span><div class="sbw"><div class="sbf ok" style="width:70%"></div></div><span class="sql">140 pcs</span></div>
+              <div class="sr"><span class="sl">Gym Vest</span><div class="sbw"><div class="sbf ok" style="width:65%"></div></div><span class="sql">130 pcs</span></div>
+              <div class="sr"><span class="sl">Men Singlet</span><div class="sbw"><div class="sbf ok" style="width:75%"></div></div><span class="sql">150 pcs</span></div>
+              <div class="sr"><span class="sl">Round Neck T-Shirt</span><div class="sbw"><div class="sbf ok" style="width:72%"></div></div><span class="sql">144 pcs</span></div>
+              <div class="sr"><span class="sl">Men Jackets</span><div class="sbw"><div class="sbf ok" style="width:60%"></div></div><span class="sql">88 pcs</span></div>
+              <div class="sr"><span class="sl">Cotton Knit Shirt</span><div class="sbw"><div class="sbf warn" style="width:35%"></div></div><span class="sql">52 pcs</span></div>
+              <div class="sr"><span class="sl">Men Coat</span><div class="sbw"><div class="sbf warn" style="width:28%"></div></div><span class="sql">42 pcs</span></div>
+              <div class="sr"><span class="sl">Men Overcoat</span><div class="sbw"><div class="sbf low" style="width:14%"></div></div><span class="sql">12 pcs ⚠️</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ct">Update Men's Stock</div></div>
+            <div class="cb">
+              <div class="fg"><label>Item</label><select><option>Men Knitted Wear</option><option>Polyester T-Shirt</option><option>Gym Vest</option><option>Men Singlet</option><option>Round Neck T-Shirt</option><option>Men Jackets</option><option>Cotton Knit Shirt</option><option>Men Coat</option><option>Men Overcoat</option><option>Plastic Footwear</option><option>Rubber Footwear</option></select></div>
+              <div class="fr">
+                <div class="fg"><label>Qty Added</label><input type="number" placeholder="0"></div>
+                <div class="fg"><label>Cost ₹</label><input type="number" placeholder="0"></div>
+              </div>
+              <div class="fg"><label>Notes</label><input type="text" placeholder="e.g. New batch from supplier"></div>
+              <div class="fa"><button class="btn-pf" onclick="toast('Men stock updated!')">Update</button><button class="btn-gh">Clear</button></div>
+            </div>
+            <div class="ch" style="margin-top:10px;"><div class="ct">📊 Stock Health</div></div>
+            <div class="cb"><div style="display:flex;gap:16px;flex-wrap:wrap;"><div style="text-align:center;"><div style="font-size:22px;font-weight:700;color:var(--green);">7</div><div style="font-size:10px;color:var(--text-light);">OK</div></div><div style="text-align:center;"><div style="font-size:22px;font-weight:700;color:var(--amber);">2</div><div style="font-size:10px;color:var(--text-light);">Low</div></div><div style="text-align:center;"><div style="font-size:22px;font-weight:700;color:var(--red);">1</div><div style="font-size:10px;color:var(--text-light);">Critical</div></div></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Women -->
+      <div id="inv-women" style="display:none;">
+        <div class="g2">
+          <div class="card">
+            <div class="ch"><div class="ct">👗 Women's Clothing</div></div>
+            <div class="cb">
+              <div class="sr"><span class="sl">Ladies Suit Sets</span><div class="sbw"><div class="sbf ok" style="width:72%"></div></div><span class="sql">96 pcs</span></div>
+              <div class="sr"><span class="sl">Cotton Kurtis</span><div class="sbw"><div class="sbf ok" style="width:85%"></div></div><span class="sql">120 pcs</span></div>
+              <div class="sr"><span class="sl">Ethnic Salwar Kameez</span><div class="sbw"><div class="sbf ok" style="width:65%"></div></div><span class="sql">88 pcs</span></div>
+              <div class="sr"><span class="sl">Embroidered Suit Sets</span><div class="sbw"><div class="sbf ok" style="width:58%"></div></div><span class="sql">62 pcs</span></div>
+              <div class="sr"><span class="sl">Cotton Home Wear Set</span><div class="sbw"><div class="sbf ok" style="width:60%"></div></div><span class="sql">72 pcs</span></div>
+              <div class="sr"><span class="sl">Ladies Plastic Slippers</span><div class="sbw"><div class="sbf ok" style="width:78%"></div></div><span class="sql">120 pairs</span></div>
+              <div class="sr"><span class="sl">Ladies Rubber Slippers</span><div class="sbw"><div class="sbf ok" style="width:68%"></div></div><span class="sql">104 pairs</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ct">Update Women's Stock</div></div>
+            <div class="cb">
+              <div class="fg"><label>Item</label><select><option>Ladies Suit Sets</option><option>Embroidered Suit Sets</option><option>Cotton Kurtis</option><option>Ethnic Salwar Kameez</option><option>Cotton Home Wear Set</option><option>Ladies Plastic Slippers</option><option>Ladies Rubber Slippers</option></select></div>
+              <div class="fr"><div class="fg"><label>Qty Added</label><input type="number" placeholder="0"></div><div class="fg"><label>Cost ₹</label><input type="number" placeholder="0"></div></div>
+              <div class="fa"><button class="btn-pf" onclick="toast('Women stock updated!')">Update</button><button class="btn-gh">Clear</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Fabrics -->
+      <div id="inv-fabrics" style="display:none;">
+        <div class="card">
+          <div class="ch"><div><div class="ct">🧵 Fabric Inventory</div><div class="cs">Metres in stock</div></div><button class="tb-btn pri" onclick="toast('Reorder alert sent!')">📤 Reorder Alert</button></div>
+          <div class="cb" style="padding:0;">
+            <table class="dt">
+              <thead><tr><th>Fabric</th><th>Type</th><th>Stock (m)</th><th>Min Level</th><th>Status</th><th>Last Restocked</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Cotton Woven Fabric</strong></td><td>Cotton</td><td>340</td><td>100</td><td><span class="badge bg">OK</span></td><td>Jan 10</td><td><button class="bsm b">Update</button></td></tr>
+                <tr><td><strong>Woven Fabric (Formal)</strong></td><td>Woven</td><td>260</td><td>80</td><td><span class="badge bg">OK</span></td><td>Jan 5</td><td><button class="bsm b">Update</button></td></tr>
+                <tr><td><strong>Knit Shirt Fabric</strong></td><td>Knit</td><td>110</td><td>120</td><td><span class="badge ba">Low</span></td><td>Dec 20</td><td><button class="bsm g" onclick="toast('Reorder placed!')">Reorder</button></td></tr>
+                <tr><td><strong>Cotton Trouser Fabric</strong></td><td>Cotton</td><td>55</td><td>100</td><td><span class="badge br">Critical</span></td><td>Dec 1</td><td><button class="bsm g" onclick="toast('Urgent reorder placed!')">Reorder</button></td></tr>
+                <tr><td><strong>Polyester & Blended Fabric</strong></td><td>Blended</td><td>185</td><td>60</td><td><span class="badge bg">OK</span></td><td>Jan 12</td><td><button class="bsm b">Update</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PRODUCTS ══ -->
+    <div class="panel" id="panel-products">
+      <div class="gt-bar">
+        <button class="gt-btn am" onclick="prodTab('men',this)">👔 Men</button>
+        <button class="gt-btn" onclick="prodTab('women',this)">👗 Women</button>
+      </div>
+      <div id="pd-men">
+        <div class="card">
+          <div class="ch"><div><div class="ct">Men's Catalogue</div><div class="cs">Toggle visibility · Edit pricing</div></div><button class="tb-btn pri" onclick="toast('Saved to website!')">💾 Save</button></div>
+          <div class="cb" style="padding:0;">
+            <table class="dt">
+              <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Show on Site</th><th>Status</th><th>Edit</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Men Knitted Wear</strong></td><td><span class="badge bw">Men's Wear</span></td><td>₹299+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Polyester T-Shirt</strong></td><td><span class="badge bw">Men's Wear</span></td><td>₹249+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Gym Vest</strong></td><td><span class="badge bw">Men's Wear</span></td><td>₹199+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Men Singlet</strong></td><td><span class="badge bw">Men's Wear</span></td><td>₹149+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Round Neck T-Shirt</strong></td><td><span class="badge bb">T-Shirts</span></td><td>₹279+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Men Jackets</strong></td><td><span class="badge bp">Jackets</span></td><td>₹999+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Cotton Knit Shirt</strong></td><td><span class="badge bp">Jackets</span></td><td>₹599+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Men Coat</strong></td><td><span class="badge ba">Coats</span></td><td>₹1,299+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Men Overcoat</strong></td><td><span class="badge ba">Coats</span></td><td>₹1,799+</td><td><label class="tgl"><input type="checkbox"><span class="tgl-s"></span></label></td><td><span class="badge ba">Low Stock</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Plastic Footwear</strong></td><td><span class="badge bw">Footwear</span></td><td>₹99+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Rubber Footwear</strong></td><td><span class="badge bw">Footwear</span></td><td>₹129+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div id="pd-women" style="display:none;">
+        <div class="card">
+          <div class="ch"><div><div class="ct">Women's Catalogue</div></div><button class="tb-btn pri" onclick="toast('Saved to website!')">💾 Save</button></div>
+          <div class="cb" style="padding:0;">
+            <table class="dt">
+              <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Show on Site</th><th>Status</th><th>Edit</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Ladies Suit Set (3-Piece)</strong></td><td><span class="badge bp">Suits</span></td><td>₹799+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Cotton Kurti (Printed)</strong></td><td><span class="badge bb">Kurti</span></td><td>₹349+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Ethnic Salwar Kameez</strong></td><td><span class="badge bb">Ethnic</span></td><td>₹649+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Ladies Embroidered Suit Set</strong></td><td><span class="badge bp">Festive</span></td><td>₹999+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Cotton Home Wear Set</strong></td><td><span class="badge bw">Kurti</span></td><td>₹449+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Ladies Plastic Slippers</strong></td><td><span class="badge bw">Footwear</span></td><td>₹99+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+                <tr><td><strong>Ladies Rubber Slippers</strong></td><td><span class="badge bw">Footwear</span></td><td>₹129+</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Active</span></td><td><button class="bsm b">Edit</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ENQUIRIES ══ -->
+    <div class="panel" id="panel-enquiries">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="eqTab(this)">All (14)</button>
+        <button class="tab-btn" onclick="eqTab(this)">New (5)</button>
+        <button class="tab-btn" onclick="eqTab(this)">Fabric (4)</button>
+        <button class="tab-btn" onclick="eqTab(this)">Bulk (3)</button>
+        <button class="tab-btn" onclick="eqTab(this)">Resolved (2)</button>
+      </div>
+      <div class="eq-card"><div class="eq-hdr"><div><div class="eq-name">Mohammad Riyaz</div><span class="badge br" style="margin-left:8px;">New</span></div><div class="eq-time">📱 WhatsApp · 2 hrs ago</div></div><div class="eq-body">Interested in Men Overcoat size XL. Used code EID20. Final price after discount?</div><div class="eq-acts"><a href="https://wa.me/919999999999" target="_blank" class="bsm b">📱 Reply on WA</a><button class="bsm g" onclick="toast('Marked resolved!')">✓ Done</button></div></div>
+      <div class="eq-card"><div class="eq-hdr"><div><div class="eq-name">Sunita Devi</div><span class="badge br" style="margin-left:8px;">New</span></div><div class="eq-time">📱 WhatsApp · 3 hrs ago</div></div><div class="eq-body">Please show ladies suit sets in cotton. Need 5 pieces for Eid festival season. Wholesale rate?</div><div class="eq-acts"><a href="https://wa.me/919999999999" target="_blank" class="bsm b">📱 Reply on WA</a><button class="bsm g" onclick="toast('Marked resolved!')">✓ Done</button></div></div>
+      <div class="eq-card"><div class="eq-hdr"><div><div class="eq-name">Ramesh Tailor</div><span class="badge ba" style="margin-left:8px;">Fabric</span></div><div class="eq-time">📱 WhatsApp · Yesterday</div></div><div class="eq-body">Need 25 metres Cotton Trouser Fabric. Bulk rate? Using code FABRIC15.</div><div class="eq-acts"><a href="https://wa.me/919999999999" target="_blank" class="bsm b">📱 Reply on WA</a><button class="bsm g" onclick="toast('Marked resolved!')">✓ Done</button></div></div>
+      <div class="eq-card"><div class="eq-hdr"><div><div class="eq-name">Aisha Parveen</div><span class="badge br" style="margin-left:8px;">New</span></div><div class="eq-time">📋 Form · Yesterday</div></div><div class="eq-body">Boutique owner from Jasidih. 50 metres Cotton Woven Fabric monthly requirement. Need pricing.</div><div class="eq-acts"><a href="https://wa.me/919999999999" target="_blank" class="bsm b">📱 Reply on WA</a><button class="bsm g" onclick="toast('Marked resolved!')">✓ Done</button></div></div>
+      <div class="eq-card"><div class="eq-hdr"><div><div class="eq-name">Vijay Kumar</div><span class="badge bb" style="margin-left:8px;">Bundle</span></div><div class="eq-time">📱 WhatsApp · 2 days ago</div></div><div class="eq-body">TEE3FREE offer. Want 3 Round Neck T-Shirts (XL) in blue, black, white.</div><div class="eq-acts"><a href="https://wa.me/919999999999" target="_blank" class="bsm b">📱 Reply on WA</a><button class="bsm g" onclick="toast('Marked resolved!')">✓ Done</button></div></div>
+    </div>
+
+    <!-- ══ SALES ══ -->
+    <div class="panel" id="panel-sales">
+      <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="stat-card g" data-icon="📅"><div class="stat-label">This Month</div><div class="stat-value">₹62,450</div><div class="stat-change up">▲ 18% vs last month</div></div>
+        <div class="stat-card b" data-icon="📆"><div class="stat-label">This Quarter</div><div class="stat-value">₹1,72,800</div><div class="stat-change up">▲ 9% vs Q3</div></div>
+        <div class="stat-card a" data-icon="🎯"><div class="stat-label">YTD Revenue</div><div class="stat-value">₹4,28,500</div><div class="stat-change up">On track</div></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="ch"><div class="ct">Revenue 2024–25</div></div><div class="cb"><div class="chart-box" id="ann-chart"></div><div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--text-light);"><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span></div></div></div>
+        <div class="card"><div class="ch"><div class="ct">Top Selling Items</div></div><div class="cb" style="padding:0;"><table class="dt"><thead><tr><th>#</th><th>Product</th><th>Units</th><th>Revenue</th></tr></thead><tbody><tr><td>1</td><td>Men Knitted Wear</td><td>182</td><td>₹12,300</td></tr><tr><td>2</td><td>Round Neck T-Shirts</td><td>165</td><td>₹10,200</td></tr><tr><td>3</td><td>Men Jackets</td><td>88</td><td>₹9,600</td></tr><tr><td>4</td><td>Embroidered Suit Sets</td><td>76</td><td>₹8,500</td></tr><tr><td>5</td><td>Cotton Kurtis</td><td>120</td><td>₹7,800</td></tr><tr><td>6</td><td>Cotton Woven Fabric</td><td>340m</td><td>₹7,200</td></tr></tbody></table></div></div>
+      </div>
+    </div>
+
+    <!-- ══ OFFERS ══ -->
+    <div class="panel" id="panel-offers">
+      <div class="g2">
+        <div class="card">
+          <div class="ch"><div><div class="ct">🎁 Active Offers</div><div class="cs">Toggle on/off on customer site</div></div><button class="tb-btn pri" onclick="toast('Offers saved!')">💾 Save</button></div>
+          <div class="cb">
+            <div class="omr"><div><div style="font-size:13px;font-weight:600;color:var(--navy);">First Order Discount</div><div><span class="occ">WELCOME10</span> · 10% off · Min ₹500</div></div><span class="badge bg">Active</span><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></div>
+            <div class="omr"><div><div style="font-size:13px;font-weight:600;color:var(--navy);">Fabric Bulk Deal</div><div><span class="occ">FABRIC15</span> · 15% off · 15m+</div></div><span class="badge bg">Active</span><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></div>
+            <div class="omr"><div><div style="font-size:13px;font-weight:600;color:var(--navy);">Eid Special</div><div><span class="occ">EID20</span> · 20% Jackets/Coats</div></div><span class="badge ba">Expiring</span><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></div>
+            <div class="omr"><div><div style="font-size:13px;font-weight:600;color:var(--navy);">T-Shirt Bundle</div><div><span class="occ">TEE3FREE</span> · Buy 3 Get 1 Free</div></div><span class="badge bg">Active</span><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></div>
+            <div class="omr"><div><div style="font-size:13px;font-weight:600;color:var(--navy);">Gym Combo</div><div><span class="occ">GYMFIT</span> · ₹50 off combo</div></div><span class="badge bg">Active</span><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></div>
+            <div class="omr"><div><div style="font-size:13px;font-weight:600;color:var(--navy);">Refer a Friend</div><div><span class="occ">REFER100</span> · ₹100 for both</div></div><span class="badge bg">Active</span><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct">➕ Create Offer</div></div>
+          <div class="cb">
+            <div class="fr"><div class="fg"><label>Offer Name</label><input type="text" placeholder="e.g. Summer Special"></div><div class="fg"><label>Promo Code</label><input type="text" placeholder="e.g. SUMMER25"></div></div>
+            <div class="fr"><div class="fg"><label>Discount Type</label><select><option>% Off</option><option>₹ Off</option><option>Buy X Get Y</option></select></div><div class="fg"><label>Value</label><input type="number" placeholder="15"></div></div>
+            <div class="fr"><div class="fg"><label>Applies To</label><select><option>All Products</option><option>Men's Wear</option><option>Women's Wear</option><option>Fabrics</option><option>Footwear</option></select></div><div class="fg"><label>Min Purchase ₹</label><input type="number" placeholder="500"></div></div>
+            <div class="fr"><div class="fg"><label>Start Date</label><input type="date"></div><div class="fg"><label>End Date</label><input type="date"></div></div>
+            <div class="fg"><label>Description</label><textarea placeholder="Shown to customers..."></textarea></div>
+            <div class="fa"><button class="btn-pf" onclick="toast('New offer created!')">🎁 Create Offer</button><button class="btn-gh">Clear</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ BULK ORDERS ══ -->
+    <div class="panel" id="panel-bulk">
+      <div class="card">
+        <div class="ch"><div><div class="ct">🤝 Bulk Order Requests</div><div class="cs">Tailors, boutiques, retailers & wholesale buyers — garments, fabrics & footwear</div></div><button class="tb-btn pri" onclick="toast('Quotes sent!')">📤 Send All Quotes</button></div>
+        <div class="cb" style="padding:0;">
+          <table class="dt">
+            <thead><tr><th>Buyer</th><th>Type</th><th>Item</th><th>Qty</th><th>Mode</th><th>Contact</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Aisha Parveen</strong></td><td>Boutique</td><td>Cotton Woven Fabric</td><td>50m</td><td><span class="badge bb">Online</span></td><td>+91-98765-XXXXX</td><td>Feb 21</td><td><span class="badge ba">Pending</span></td><td><button class="bsm b" onclick="toast('Quote sent!')">Quote</button></td></tr>
+              <tr><td><strong>Ramesh Tailor</strong></td><td>Tailor</td><td>Cotton Trouser Fabric</td><td>25m</td><td><span class="badge bw">In-Store</span></td><td>+91-97654-XXXXX</td><td>Feb 20</td><td><span class="badge ba">Pending</span></td><td><button class="bsm b" onclick="toast('Quote sent!')">Quote</button></td></tr>
+              <tr><td><strong>Priya Boutique</strong></td><td>Boutique</td><td>Embroidered Suit Sets</td><td>20 pcs</td><td><span class="badge bb">Online</span></td><td>+91-96543-XXXXX</td><td>Feb 18</td><td><span class="badge bg">Confirmed</span></td><td><button class="bsm g" onclick="toast('Completed!')">Done</button></td></tr>
+              <tr><td><strong>Sanjay Kapoor</strong></td><td>Wholesale</td><td>Woven Fabric</td><td>100m</td><td><span class="badge bb">Online</span></td><td>+91-95432-XXXXX</td><td>Feb 15</td><td><span class="badge bg">Confirmed</span></td><td><button class="bsm g" onclick="toast('Completed!')">Done</button></td></tr>
+              <tr><td><strong>Meena Devi</strong></td><td>Retail</td><td>Men Knitted Wear</td><td>30 pcs</td><td><span class="badge bw">In-Store</span></td><td>+91-94321-XXXXX</td><td>Feb 10</td><td><span class="badge bb">Done</span></td><td><span class="badge bb">Closed</span></td></tr>
+              <tr><td><strong>Farhan Sports</strong></td><td>Retail</td><td>Gym Vest + Singlet</td><td>48 pcs each</td><td><span class="badge bb">Online</span></td><td>+91-93210-XXXXX</td><td>Feb 8</td><td><span class="badge bg">Confirmed</span></td><td><button class="bsm g" onclick="toast('Completed!')">Done</button></td></tr>
+              <tr><td><strong>Sunita Stores</strong></td><td>Retail</td><td>Ladies Rubber Slippers</td><td>48 pairs</td><td><span class="badge bw">In-Store</span></td><td>+91-92109-XXXXX</td><td>Feb 5</td><td><span class="badge bg">Confirmed</span></td><td><button class="bsm g" onclick="toast('Completed!')">Done</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ BULK MARKETPLACE PANEL ══ -->
+    <div class="panel" id="panel-bulk-mkt">
+      <div class="stat-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:22px;">
+        <div class="stat-card g" data-icon="📦"><div class="stat-label">Active Listings</div><div class="stat-value">15</div><div class="stat-change up">All categories live</div></div>
+        <div class="stat-card b" data-icon="📲"><div class="stat-label">Online Enquiries</div><div class="stat-value">38</div><div class="stat-change up">▲ 14 this week</div></div>
+        <div class="stat-card a" data-icon="🏪"><div class="stat-label">In-Store Reservations</div><div class="stat-value">12</div><div class="stat-change up">Via WhatsApp</div></div>
+        <div class="stat-card p" data-icon="💰"><div class="stat-label">Bulk Revenue MTD</div><div class="stat-value">₹24,800</div><div class="stat-change up">▲ 22% vs last month</div></div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="ch"><div><div class="ct">📦 Marketplace Listings</div><div class="cs">Toggle visibility · Update MOQ & pricing</div></div><button class="tb-btn pri" onclick="toast('Marketplace updated!')">💾 Save Changes</button></div>
+          <div class="cb" style="padding:0;">
+            <table class="dt">
+              <thead><tr><th>Product</th><th>Category</th><th>Bulk Price</th><th>MOQ</th><th>Live on Site</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Men Knitted Wear</strong></td><td><span class="badge bw">Men's Wear</span></td><td>₹220/pc</td><td>12 pcs</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Live</span></td></tr>
+                <tr><td><strong>Polyester T-Shirt</strong></td><td><span class="badge bw">Men's Wear</span></td><td>₹180/pc</td><td>24 pcs</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Live</span></td></tr>
+                <tr><td><strong>Gym Vest</strong></td><td><span class="badge bw">Men's Wear</span></td><td>₹140/pc</td><td>24 pcs</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Live</span></td></tr>
+                <tr><td><strong>Men Singlet</strong></td><td><span class="badge bw">Men's Wear</span></td><td>₹110/pc</td><td>24 pcs</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Live</span></td></tr>
+                <tr><td><strong>Men Round Neck T-Shirt</strong></td><td><span class="badge bb">T-Shirts</span></td><td>₹155/pc</td><td>24 pcs</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Live</span></td></tr>
+                <tr><td><strong>Cotton Knit Shirt</strong></td><td><span class="badge bp">Jackets</span></td><td>₹390/pc</td><td>12 pcs</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Live</span></td></tr>
+                <tr><td><strong>Men Jackets</strong></td><td><span class="badge bp">Jackets</span></td><td>₹699/pc</td><td>6 pcs</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Live</span></td></tr>
+                <tr><td><strong>Men Coat</strong></td><td><span class="badge ba">Coats</span></td><td>₹899/pc</td><td>6 pcs</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Live</span></td></tr>
+                <tr><td><strong>Men Overcoat</strong></td><td><span class="badge ba">Coats</span></td><td>₹1,199/pc</td><td>6 pcs</td><td><label class="tgl"><input type="checkbox"><span class="tgl-s"></span></label></td><td><span class="badge ba">Low Stock</span></td></tr>
+                <tr><td><strong>Cotton Woven Fabric</strong></td><td><span class="badge bw">Fabrics</span></td><td>₹75/m</td><td>10m</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Live</span></td></tr>
+                <tr><td><strong>Woven Fabric</strong></td><td><span class="badge bw">Fabrics</span></td><td>₹110/m</td><td>10m</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Live</span></td></tr>
+                <tr><td><strong>Knit Shirt Fabric</strong></td><td><span class="badge bw">Fabrics</span></td><td>₹85/m</td><td>10m</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge ba">Low Stock</span></td></tr>
+                <tr><td><strong>Cotton Trouser Fabric</strong></td><td><span class="badge bw">Fabrics</span></td><td>₹90/m</td><td>10m</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge br">Critical</span></td></tr>
+                <tr><td><strong>Ladies Plastic Slippers</strong></td><td><span class="badge bw">Footwear</span></td><td>₹70/pair</td><td>24 pairs</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Live</span></td></tr>
+                <tr><td><strong>Ladies Rubber Slippers</strong></td><td><span class="badge bw">Footwear</span></td><td>₹95/pair</td><td>24 pairs</td><td><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></td><td><span class="badge bg">Live</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:18px;">
+            <div class="ch"><div><div class="ct">🛒 Order Mode Analytics</div><div class="cs">Online vs Offline enquiries</div></div></div>
+            <div class="cb">
+              <div class="sr"><span class="sl">Online (WhatsApp Orders)</span><div class="sbw"><div class="sbf ok" style="width:68%"></div></div><span class="sql">26 enquiries</span></div>
+              <div class="sr"><span class="sl">Offline (Reserve & Visit)</span><div class="sbw"><div class="sbf warn" style="width:32%"></div></div><span class="sql">12 visits</span></div>
+              <div class="sr"><span class="sl">Fabrics</span><div class="sbw"><div class="sbf ok" style="width:52%"></div></div><span class="sql">20 bulk orders</span></div>
+              <div class="sr"><span class="sl">Garments (Bulk)</span><div class="sbw"><div class="sbf ok" style="width:72%"></div></div><span class="sql">28 orders</span></div>
+              <div class="sr"><span class="sl">Footwear (Bulk)</span><div class="sbw"><div class="sbf warn" style="width:28%"></div></div><span class="sql">10 orders</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ct">➕ Add / Update Listing</div></div>
+            <div class="cb">
+              <div class="fg"><label>Product</label><select>
+                <optgroup label="Men's Wear"><option>Men Knitted Wear</option><option>Polyester T-Shirt</option><option>Gym Vest</option><option>Men Singlet</option><option>Men Round Neck T-Shirt</option></optgroup>
+                <optgroup label="Jackets & Coats"><option>Cotton Knit Shirt</option><option>Men Jackets</option><option>Men Coat</option><option>Men Overcoat</option></optgroup>
+                <optgroup label="Fabrics"><option>Cotton Woven Fabric</option><option>Woven Fabric</option><option>Knit Shirt Fabric</option><option>Cotton Trouser Fabric</option><option>Polyester & Blended Fabric</option></optgroup>
+                <optgroup label="Footwear"><option>Ladies Plastic Slippers</option><option>Ladies Rubber Slippers</option></optgroup>
+              </select></div>
+              <div class="fr">
+                <div class="fg"><label>Bulk Price (₹)</label><input type="number" placeholder="e.g. 220"></div>
+                <div class="fg"><label>MOQ</label><input type="text" placeholder="e.g. 12 pcs"></div>
+              </div>
+              <div class="fg"><label>MRP (for savings display)</label><input type="number" placeholder="e.g. 299"></div>
+              <div class="fa"><button class="btn-pf" onclick="toast('Listing updated!')">Update Listing</button><button class="btn-gh">Clear</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CATALOGUE EDITOR ══ -->
+    <div class="panel" id="panel-catalogue">
+      <div class="g2">
+        <div class="card">
+          <div class="ch"><div class="ct">📋 Festival Banner</div></div>
+          <div class="cb">
+            <div class="fg"><label>Headline</label><input type="text" value="🌙 Eid Special Sale — Up to 40% Off on Select Fabrics!"></div>
+            <div class="fg"><label>Subtext</label><input type="text" value="Limited period offer · In-store only · Valid while stocks last"></div>
+            <div class="fg"><label>Button Label</label><input type="text" value="Shop the Collection →"></div>
+            <div class="fg"><label>Banner Visible?</label><select><option>Yes — Show</option><option>No — Hide</option></select></div>
+            <div class="fa"><button class="btn-pf" onclick="toast('Banner updated!')">Update Banner</button></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct">🏪 Store Information</div></div>
+          <div class="cb">
+            <div class="fg"><label>WhatsApp Number</label><input type="text" value="+91-99999-99999"></div>
+            <div class="fg"><label>Address</label><textarea>Ground Floor, Shop No. 1, Assam Access Road, NH 114A, Near Pani Tanki, Deoghar, Jharkhand — 814112</textarea></div>
+            <div class="fr"><div class="fg"><label>Opens</label><input value="9:00 AM"></div><div class="fg"><label>Closes</label><input value="8:00 PM"></div></div>
+            <div class="fa"><button class="btn-pf" onclick="toast('Store info saved!')">Save</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SETTINGS ══ -->
+    <div class="panel" id="panel-settings">
+      <div class="g2">
+        <div>
+          <div class="ss">
+            <div class="ss-title">🔐 Security</div>
+            <div class="srow"><div><div class="slbl">Change Password</div><div class="sdesc">Update dashboard access password</div></div><button class="tb-btn sec" onclick="toast('Password reset link sent!')">Change</button></div>
+            <div class="srow"><div><div class="slbl">Auto-logout (30 mins)</div></div><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></div>
+          </div>
+          <div class="ss">
+            <div class="ss-title">📱 WhatsApp Alerts</div>
+            <div class="srow"><div><div class="slbl">New Enquiry Alert</div></div><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></div>
+            <div class="srow"><div><div class="slbl">Low Stock Alert</div></div><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></div>
+            <div class="srow"><div><div class="slbl">Daily Revenue Summary</div></div><label class="tgl"><input type="checkbox"><span class="tgl-s"></span></label></div>
+          </div>
+        </div>
+        <div>
+          <div class="ss">
+            <div class="ss-title">🌐 Website Visibility</div>
+            <div class="srow"><div><div class="slbl">Festival Banner</div></div><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></div>
+            <div class="srow"><div><div class="slbl">Online Offers Section</div></div><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></div>
+            <div class="srow"><div><div class="slbl">Women's Section</div></div><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></div>
+            <div class="srow"><div><div class="slbl">Bulk Marketplace Section</div></div><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></div>
+            <div class="srow"><div><div class="slbl">Bulk Order Form</div></div><label class="tgl"><input type="checkbox" checked><span class="tgl-s"></span></label></div>
+          </div>
+          <div class="ss">
+            <div class="ss-title">💳 Payments</div>
+            <div class="srow"><div class="slbl">UPI ID</div><input type="text" value="theselection@upi" style="width:160px;padding:6px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;"></div>
+            <div class="srow"><div class="slbl">PhonePe</div><input type="text" value="+91-99999-99999" style="width:160px;padding:6px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.main -->
+</div><!-- /#dashboard -->
+
+<!-- TOAST -->
+<div id="t" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 22px;border-radius:50px;box-shadow:0 8px 28px rgba(13,27,42,.25);font-size:13px;font-weight:600;z-index:99999;display:none;border:1px solid var(--gold);font-family:'Inter',sans-serif;white-space:nowrap;">✅</div>
+
+<script>
+const CREDS = {user:'owner', pass:'selection2025'};
+
+function openSidebar() {
+  document.querySelector('.sidebar').classList.add('open');
+  document.getElementById('sbOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sbOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function doLogin() {
+  const u = document.getElementById('lu').value.trim();
+  const p = document.getElementById('lp').value.trim();
+  if (u === CREDS.user && p === CREDS.pass) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    document.getElementById('login-time-lbl').textContent = new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    buildCharts();
+  } else {
+    document.getElementById('lerr').style.display = 'block';
+    document.getElementById('lp').value = '';
+  }
+}
+
+function doLogout() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('lu').value = '';
+  document.getElementById('lp').value = '';
+}
+
+const panelMeta = {
+  overview:  ['Overview','Business summary'],
+  inventory: ['Inventory','Stock levels across all items'],
+  products:  ['Products','Catalogue & visibility'],
+  enquiries: ['Enquiries','Customer messages & requests'],
+  sales:     ['Sales & Revenue','Financial performance'],
+  offers:    ['Offers Manager','Discount codes & campaigns'],
+  bulk:      ['Bulk Orders','Wholesale buyer management'],
+  'bulk-mkt':['Bulk Marketplace','Product listings & order mode management'],
+  catalogue: ['Catalogue Editor','Banners & store info'],
+  settings:  ['Settings','Website, alerts & payments'],
+};
+
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-'+id)?.classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(b => {
+    if (b.getAttribute('onclick')?.includes(`'${id}'`)) b.classList.add('active');
+  });
+  const [t,s] = panelMeta[id]||['Dashboard',''];
+  document.getElementById('panel-title').textContent = t;
+  document.getElementById('panel-sub').textContent = s + ' · ' + (document.getElementById('today-date')?.textContent||'');
+  // Close sidebar on mobile after navigation
+  if (window.innerWidth < 900) closeSidebar();
+}
+
+function ovGender(g, btn) {
+  document.getElementById('ov-m').className = 'gt-btn' + (g==='men'?' am':'');
+  document.getElementById('ov-w').className = 'gt-btn' + (g==='women'?' aw':'');
+  document.getElementById('ov-men-d').style.display = g==='men'?'':'none';
+  document.getElementById('ov-w-d').style.display = g==='women'?'':'none';
+}
+
+function invTab(g, btn) {
+  ['inv-mb','inv-wb','inv-fb'].forEach(id => document.getElementById(id).className = 'gt-btn');
+  const map = {men:'inv-mb',women:'inv-wb',fabrics:'inv-fb'};
+  const cls = {men:'am',women:'aw',fabrics:'am'};
+  document.getElementById(map[g]).className = 'gt-btn '+cls[g];
+  ['inv-men','inv-women','inv-fabrics'].forEach(id => document.getElementById(id).style.display='none');
+  document.getElementById('inv-'+g).style.display = '';
+}
+
+function prodTab(g, btn) {
+  btn.closest('.gt-bar').querySelectorAll('.gt-btn').forEach(b => b.className = 'gt-btn');
+  btn.className = 'gt-btn ' + (g==='men'?'am':'aw');
+  document.getElementById('pd-men').style.display = g==='men'?'':'none';
+  document.getElementById('pd-women').style.display = g==='women'?'':'none';
+}
+
+function eqTab(btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function toast(msg) {
+  const t = document.getElementById('t');
+  t.textContent = '✅ ' + msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display='none', 2600);
+}
+
+function buildCharts() {
+  const bar = (id, data, color) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const max = Math.max(...data);
+    el.innerHTML = data.map((v,i) =>
+      `<div class="cb-bar" style="height:${v?Math.round(v/max*100):5}%;background:${v?color:'#dde4ed'};opacity:${v?.65+i/data.length*.35:.3};" title="${v}k"></div>`
+    ).join('');
+  };
+  bar('rev-chart', [42,38,51,48,55,62], '#3b82f6');
+  bar('ann-chart', [28,32,38,35,42,39,48,52,61,55,62,0], '#22c55e');
+}
+</script>
+</body>
+</html>
